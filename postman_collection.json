@@ -1,0 +1,113 @@
+{
+  "info": {
+    "name": "Execution Service API",
+    "description": "Collection for Execution Service endpoints - Executions, Queue",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{jwt_token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Executions",
+      "item": [
+        {
+          "name": "Create Execution",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workOrderId\": \"wo-uuid\",\n  \"technicianId\": \"tech-uuid\",\n  \"priority\": 5\n}"
+            },
+            "url": { "raw": "{{base_url}}/executions", "host": ["{{base_url}}"], "path": ["executions"] }
+          }
+        },
+        {
+          "name": "Get All Executions",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/executions", "host": ["{{base_url}}"], "path": ["executions"] } }
+        },
+        {
+          "name": "Get Execution Queue",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/executions/queue", "host": ["{{base_url}}"], "path": ["executions", "queue"] } }
+        },
+        {
+          "name": "Get Execution by ID",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/executions/{{execution_id}}", "host": ["{{base_url}}"], "path": ["executions", "{{execution_id}}"] } }
+        },
+        {
+          "name": "Get Execution by Work Order",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/executions/work-order/{{work_order_id}}", "host": ["{{base_url}}"], "path": ["executions", "work-order", "{{work_order_id}}"] } }
+        },
+        {
+          "name": "Update Execution",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"priority\": 10\n}" },
+            "url": { "raw": "{{base_url}}/executions/{{execution_id}}", "host": ["{{base_url}}"], "path": ["executions", "{{execution_id}}"] }
+          }
+        },
+        {
+          "name": "Start Diagnosis",
+          "request": { "method": "POST", "url": { "raw": "{{base_url}}/executions/{{execution_id}}/start-diagnosis", "host": ["{{base_url}}"], "path": ["executions", "{{execution_id}}", "start-diagnosis"] } }
+        },
+        {
+          "name": "Complete Diagnosis",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"notes\": \"Engine oil degraded. Filter clogged. Replacement recommended.\"\n}" },
+            "url": { "raw": "{{base_url}}/executions/{{execution_id}}/complete-diagnosis", "host": ["{{base_url}}"], "path": ["executions", "{{execution_id}}", "complete-diagnosis"] }
+          }
+        },
+        {
+          "name": "Start Repair",
+          "request": { "method": "POST", "url": { "raw": "{{base_url}}/executions/{{execution_id}}/start-repair", "host": ["{{base_url}}"], "path": ["executions", "{{execution_id}}", "start-repair"] } }
+        },
+        {
+          "name": "Complete Repair",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"notes\": \"Oil and filter replaced. Engine tested OK.\"\n}" },
+            "url": { "raw": "{{base_url}}/executions/{{execution_id}}/complete-repair", "host": ["{{base_url}}"], "path": ["executions", "{{execution_id}}", "complete-repair"] }
+          }
+        },
+        {
+          "name": "Complete Execution",
+          "request": { "method": "POST", "url": { "raw": "{{base_url}}/executions/{{execution_id}}/complete", "host": ["{{base_url}}"], "path": ["executions", "{{execution_id}}", "complete"] } }
+        }
+      ]
+    },
+    {
+      "name": "Queue",
+      "item": [
+        {
+          "name": "Get Queue",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/queue", "host": ["{{base_url}}"], "path": ["queue"] } }
+        },
+        {
+          "name": "Get Queue Statistics",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/queue/statistics", "host": ["{{base_url}}"], "path": ["queue", "statistics"] } }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check (No Auth)",
+          "request": { "method": "GET", "auth": { "type": "noauth" }, "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] } }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3003", "type": "string" },
+    { "key": "jwt_token", "value": "", "type": "string" },
+    { "key": "execution_id", "value": "", "type": "string" },
+    { "key": "work_order_id", "value": "", "type": "string" }
+  ]
+}
