@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: execution-service
+  labels:
+    app: execution-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: execution-service
+  template:
+    metadata:
+      labels:
+        app: execution-service
+    spec:
+      containers:
+      - name: execution-service
+        image: garage-execution-service:latest
+        ports:
+        - containerPort: 3003
+        env:
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: execution-service-config
+              key: database-host
+        - name: DATABASE_PORT
+          value: "5432"
+        - name: DATABASE_USER
+          valueFrom:
+            secretKeyRef:
+              name: execution-service-secrets
+              key: database-user
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: execution-service-secrets
+              key: database-password
+        - name: DATABASE_NAME
+          value: "execution_service"
+        - name: RABBITMQ_URL
+          valueFrom:
+            secretKeyRef:
+              name: execution-service-secrets
+              key: rabbitmq-url
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3003
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3003
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: execution-service
+spec:
+  selector:
+    app: execution-service
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 3003
+  type: ClusterIP
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: execution-service-config
+data:
+  database-host: postgres-execution-service
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: execution-service-secrets
+type: Opaque
+stringData:
+  database-user: postgres
+  database-password: postgres
+  rabbitmq-url: amqp://rabbitmq:5672
