@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-execution-service
+  labels:
+    app: postgres-execution-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-execution-service
+  template:
+    metadata:
+      labels:
+        app: postgres-execution-service
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: execution_service
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: execution-service-secrets
+              key: database-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: execution-service-secrets
+              key: database-password
+        volumeMounts:
+        - name: pgdata
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: pgdata
+        emptyDir: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-execution-service
+spec:
+  selector:
+    app: postgres-execution-service
+  ports:
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432
+  type: ClusterIP
