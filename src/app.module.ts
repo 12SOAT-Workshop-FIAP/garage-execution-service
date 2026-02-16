@@ -7,6 +7,7 @@ import { QueueModule } from './queue/queue.module';
 import { MessagingModule } from './messaging/messaging.module';
 import { HealthController } from './health/health.controller';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { Execution } from './execution/entities/execution.entity';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: process.env.NODE_ENV === 'development',
     }),
+    TypeOrmModule.forFeature([Execution]),
     ExecutionModule,
     QueueModule,
     MessagingModule,
