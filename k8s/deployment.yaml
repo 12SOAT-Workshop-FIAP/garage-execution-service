@@ -83,13 +83,5 @@ metadata:
   name: execution-service-config
 data:
   database-host: postgres-execution-service
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: execution-service-secrets
-type: Opaque
-stringData:
-  database-user: postgres
-  database-password: postgres
-  rabbitmq-url: amqp://rabbitmq-execution-service:5672
+
+
