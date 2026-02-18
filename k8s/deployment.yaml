@@ -15,54 +15,59 @@ spec:
         app: execution-service
     spec:
       containers:
-      - name: execution-service
-        image: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/garage-execution-service:latest
-        ports:
-        - containerPort: 3003
-        env:
-        - name: DATABASE_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: execution-service-config
-              key: database-host
-        - name: DATABASE_PORT
-          value: "5432"
-        - name: DATABASE_USER
-          valueFrom:
-            secretKeyRef:
-              name: execution-service-secrets
-              key: database-user
-        - name: DATABASE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: execution-service-secrets
-              key: database-password
-        - name: DATABASE_NAME
-          value: "execution_service"
-        - name: RABBITMQ_URL
-          valueFrom:
-            secretKeyRef:
-              name: execution-service-secrets
-              key: rabbitmq-url
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 3003
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 3003
-          initialDelaySeconds: 10
-          periodSeconds: 5
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
+        - name: execution-service
+          image: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/garage-execution-service:v2
+          ports:
+            - containerPort: 3003
+          env:
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: execution-service-config
+                  key: database-host
+            - name: DATABASE_PORT
+              value: '5432'
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: execution-service-secrets
+                  key: database-user
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: execution-service-secrets
+                  key: database-password
+            - name: DATABASE_NAME
+              value: 'execution_service'
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: fiap-garage-secret
+                  key: RABBITMQ_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: fiap-garage-secret
+                  key: JWT_SECRET
+          livenessProbe:
+            httpGet:
+              path: /execution/health
+              port: 3003
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /execution/health
+              port: 3003
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: '128Mi'
+              cpu: '50m'
+            limits:
+              memory: '256Mi'
+              cpu: '200m'
 ---
 apiVersion: v1
 kind: Service
@@ -72,10 +77,11 @@ spec:
   selector:
     app: execution-service
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 3003
-  type: ClusterIP
+    - protocol: TCP
+      port: 80
+      targetPort: 3003
+      nodePort: 31003
+  type: NodePort
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -83,5 +89,3 @@ metadata:
   name: execution-service-config
 data:
   database-host: postgres-execution-service
-
-

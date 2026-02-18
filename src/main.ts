@@ -8,6 +8,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableCors();
+  app.setGlobalPrefix('execution');
 
   const config = new DocumentBuilder()
     .setTitle('Execution Service API')
@@ -19,6 +20,8 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
 
   await app.listen(process.env.PORT || 3003);
-  console.log(`Execution Service running on port ${process.env.PORT || 3003}`);
+  console.log(
+    `Execution Service running on port ${process.env.PORT || 3003} with prefix /execution`,
+  );
 }
 bootstrap();
