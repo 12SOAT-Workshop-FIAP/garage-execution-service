@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: execution-service
-          image: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/garage-execution-service:v2
+          image: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/garage-execution-service:latest
           ports:
             - containerPort: 3003
           env:
